@@ -42,7 +42,7 @@ void *chronoVoid()
 
     while (started)
     {
-        pthread_testcancel();
+        pthread_testcancel();//Sans cette ligne besoin de cliquer 2x sur reset pour que la thread se stop
 
         if(!chronoInitialized)
         {
@@ -79,7 +79,7 @@ void *chronoVoid()
             timeInSecond = (double) elapsed_time / 1000;
 
             hours = timeInSecond / 3600;
-            minutes = (int) round((timeInSecond / 60)) % 60;
+            minutes = (int)(timeInSecond / 60) % 60;
             double seconds_decimal = fmod(timeInSecond, 60.0);
             secondes = (int) round(seconds_decimal);
             int milliseconds = (int) round(fmod(seconds_decimal, 1) * 100);
@@ -130,7 +130,6 @@ void on_resume_clicked(GtkWidget *widget, gpointer data)
 void on_reset_clicked(GtkWidget *widget, gpointer data)
 {
     if(started == 1 && pthread_cancel(chrono) == 0)
-    {
         started = 0;
         paused = 0;
         reset_time();
@@ -139,7 +138,6 @@ void on_reset_clicked(GtkWidget *widget, gpointer data)
         gtk_widget_hide(stop_button); 
         gtk_widget_hide(reset_button);
         gtk_widget_hide(resume_button);
-    }
 }
 
 void init_gtk(int *argc, char ***argv)
