@@ -8,7 +8,7 @@ int started = 0;
 int paused = 0;
 
 double timeInSecond = 0;
-int hours = 0, minutes = 0, secondes = 0;
+long hours = 0, minutes = 0, secondes = 0;
 
 GtkWidget *label;
 GtkWidget *reset_button;
@@ -23,7 +23,7 @@ void init_gtk(int *argc, char ***argv);
 void create_window();
 void *chronoVoid();
 
-char* default_text = "00:00:00,000";
+char* default_text = "00:00:00,0";
 
 int main(int argc, char *argv[]) 
 {
@@ -79,16 +79,17 @@ void *chronoVoid()
             timeInSecond = (double) elapsed_time / 1000;
 
             hours = timeInSecond / 3600;
-            minutes = (int)(timeInSecond / 60) % 60;
+            minutes = (long)(timeInSecond / 60) % 60;
             double seconds_decimal = fmod(timeInSecond, 60.0);
-            secondes = (int) round(seconds_decimal);
-            int milliseconds = (int) round(fmod(seconds_decimal, 1) * 100);
+            secondes = (long) round(seconds_decimal);
+            long milliseconds = (long) round(fmod(seconds_decimal, 1) * 100);
 
             char texte[50];
-            sprintf(texte, "%02d:%02d:%06.3f", hours, minutes, seconds_decimal);
-            gtk_label_set_text(GTK_LABEL(label), texte);
+            sprintf(texte, "%02ld:%02ld:%04.1f", hours, minutes, seconds_decimal);
+            gtk_label_set_text_with_mnemonic(GTK_LABEL(label), texte);
+            //usleep(500000);
 
-            usleep(50000);
+            usleep(100000);
         }
     }
 }
@@ -114,22 +115,27 @@ void on_started_clicked(GtkWidget *widget, gpointer data)
 void on_stop_clicked(GtkWidget *widget, gpointer data) 
 {
     if(started)
+    {
         gtk_widget_show(resume_button); 
         gtk_widget_hide(stop_button);
         paused = 1;
+    }
 }
 
 void on_resume_clicked(GtkWidget *widget, gpointer data) 
 {
     if(paused)
+    {
         gtk_widget_show(stop_button);
         gtk_widget_hide(resume_button);
         paused = 0;
+    }
 }
 
 void on_reset_clicked(GtkWidget *widget, gpointer data)
 {
     if(started == 1 && pthread_cancel(chrono) == 0)
+    {
         started = 0;
         paused = 0;
         reset_time();
@@ -138,6 +144,7 @@ void on_reset_clicked(GtkWidget *widget, gpointer data)
         gtk_widget_hide(stop_button); 
         gtk_widget_hide(reset_button);
         gtk_widget_hide(resume_button);
+    }
 }
 
 void init_gtk(int *argc, char ***argv)
